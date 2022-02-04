@@ -1,27 +1,10 @@
-# simple-kmod
+This repository contains the kernel-4.18.0-305.30.1.el8_4 nvme-tcp sourcecode, with the upstream commit a0fdd1418007f83565d3f2e04b47923ba93a9b8c applied.
 
-Simple kmod example taken from [tldp.org](https://www.tldp.org/LDP/lkmpg/2.6/html/x121.html).
+Author: Keith Busch <kbusch@kernel.org>
 
-To build on Fedora, first install:
+Date:   Mon May 17 15:36:43 2021 -0700
 
-```
-sudo dnf install kernel-devel make gcc
-```
+    nvme-tcp: rerun io_work if req_list is not empty
 
-To build for the currently running kernel use:
 
-```
-make all
-```
-
-To build for a specific kernel:
-
-```
-make all KVER=5.3.4-300.fc31.x86_64
-```
-
-Load module:
-
-```
-sudo insmod hello-1.ko
-```
+All code is linux kernel code, under the linux kernel license.
