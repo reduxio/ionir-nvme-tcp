@@ -1113,10 +1113,11 @@ static void nvme_tcp_io_work(struct work_struct *w)
 	unsigned long deadline = jiffies + msecs_to_jiffies(1);
 
 	do {
-		bool pending = false;
 		int result;
+		bool pending = false;
+		bool lock_ok = mutex_trylock(&queue->send_mutex);
 
-		if (mutex_trylock(&queue->send_mutex)) {
+		if (likely(lock_ok)) {
 			result = nvme_tcp_try_send(queue);
 			mutex_unlock(&queue->send_mutex);
 			if (result > 0)
@@ -1131,9 +1132,12 @@ static void nvme_tcp_io_work(struct work_struct *w)
 		else if (unlikely(result < 0))
 			return;
 
-		if (!pending)
-			return;
-
+		if (!pending) {
+			if (lock_ok)
+				return;
+			else
+				break;
+		}
 	} while (!time_after(jiffies, deadline)); /* quota is exhausted */
 
 	queue_work_on(queue->io_cpu, nvme_tcp_wq, &queue->io_work);
